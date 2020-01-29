@@ -1,0 +1,12 @@
+{
+  "name": "jaffa-content-manager-swalab2020",
+  "version": "1.0.0",
+  "description": "microservice for labwork",
+  "main": "index.js",
+  "author": "Vili Lipo",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
