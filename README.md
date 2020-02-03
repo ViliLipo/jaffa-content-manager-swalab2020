@@ -42,9 +42,10 @@ This decomposing strategy follows the "decompose by business capability"-pattern
 
 - The back-end micro-services are implemented in Node.js/Express.js framework.
 - The front-end will use React.js
-- Possibly utilizes AMQP, in messaging out of curiosity, although using websockets might 
-be necessary to achieve the desired performance characteristics.
 - The application will use a single database server, but will use the private-tables-per-service pattern.
+- Interservice communication will use RabbitMQ. Simple implementation of the Reactor-pattern will
+be used to handle different types of events, in which the machine queue will be the event queue and
+i will create a eventHandlerFactory to create a function that corresponds to a type of an event.
 
 ### The Saga-pattern
 

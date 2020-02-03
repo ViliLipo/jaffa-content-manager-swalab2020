@@ -19,6 +19,10 @@ Post.init({
     type: Sequelize.STRING,
     allowNull: false,
   },
+  pending: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: true,
+  },
 }, {
   sequelize: database,
   modelName: 'post',
