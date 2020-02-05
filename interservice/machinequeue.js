@@ -12,16 +12,17 @@ const mqSend = async (message, queue) => {
   await connection.close();
 };
 
-const receive = async (queueName) => {
+const registerReceiver = async (queueName, receiver) => {
   const connection = await amqp.connect('amqp://localhost');
   const channel = await connection.createChannel();
   const ok = await channel.assertQueue(queueName, { durable: false });
   if (ok) {
     channel.consume(queueName, (message) => {
       console.log(` Received ${message.content.toString()}`);
+      receiver(message);
     }, { noAck: true });
     console.log('Waiting for messages.');
   }
 };
 
-module.exports = { mqSend, receive };
+module.exports = { mqSend, registerReceiver };

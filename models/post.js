@@ -1,7 +1,6 @@
 const Sequelize = require('sequelize');
 const database = require('./database.js');
 
-console.log(database);
 
 const { Model } = Sequelize;
 
