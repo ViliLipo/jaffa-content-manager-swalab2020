@@ -4,7 +4,24 @@ const Post = require('./post.js');
 
 const { Model } = Sequelize;
 
-class Comment extends Model {}
+class Comment extends Model {
+  getSimpleRepresentation() {
+    const {
+      id, content, user, pending,
+    } = this;
+    return {
+      type: 'comment',
+      id,
+      content,
+      user,
+      pending,
+    };
+  }
+
+  getJsonRepresentation() {
+    return JSON.stringify(this.getSimpleRepresentation());
+  }
+}
 
 Comment.init({
   content: {

@@ -4,7 +4,24 @@ const database = require('./database.js');
 
 const { Model } = Sequelize;
 
-class Post extends Model {}
+class Post extends Model {
+  getSimpleRepresentation() {
+    const {
+      id, title, content, user,
+    } = this;
+    return {
+      type: 'post',
+      id,
+      title,
+      content,
+      user,
+    };
+  }
+
+  getJsonRepresentation() {
+    return JSON.stringify(this.getSimpleRepresentation());
+  }
+}
 
 Post.init({
   title: {
