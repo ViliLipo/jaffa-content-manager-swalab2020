@@ -12,7 +12,10 @@ const beginModerationSaga = async (jsonData) => {
 
 contentRouter.get('/', async (request, response) => {
   try {
-    const posts = await Post.findAll({ include: [Comment] });
+    const posts = await Post.findAll({
+      include: [Comment],
+      where: { pending: false },
+    });
     response.json(posts);
   } catch (error) {
     console.error(error);
@@ -20,7 +23,7 @@ contentRouter.get('/', async (request, response) => {
   }
 });
 
-contentRouter.post('/post', async (request, response) => {
+contentRouter.post('/', async (request, response) => {
   try {
     const data = request.body;
     const { username, title, content } = data;
