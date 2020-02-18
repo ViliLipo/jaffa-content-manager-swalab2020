@@ -16,7 +16,7 @@ contentRouter.get('/', async (request, response) => {
       include: [Comment],
       where: { pending: false },
     });
-    response.json(posts);
+    response.status(200).json(posts);
   } catch (error) {
     console.error(error);
     response.status(404).json({ error: 'Posts not found.' });
