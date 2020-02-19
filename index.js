@@ -2,8 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const contentRouter = require('./controllers/content.js');
 const database = require('./models/database.js');
-const { mqSend, registerReceiver } = require('./interservice/machinequeue.js');
-const contentEventReceiver = require('./interservice/contentEventReceiver.js');
+const { mqSend } = require('./interservice/machinequeue.js');
 
 const contentEventQueue = 'content_event_queue';
 
@@ -14,7 +13,6 @@ const allowCORS = (req, res, next) => {
   next();
 };
 
-registerReceiver(contentEventQueue, contentEventReceiver);
 
 const app = express();
 app.use(allowCORS);

@@ -1,13 +1,17 @@
 const Comment = require('../models/comment.js');
 const Post = require('../models/post.js');
+const { mqRPC } = require('./machinequeue.js');
 
+const moderationEventQueue = 'moderation_event_queue';
 
 const generalSagaAcceptor = async (model, data) => {
   const { id, passed } = data;
-  const result = passed
-    ? await model.update({ pending: false }, { where: { id } })
-    : await model.destroy({ where: { id, pending: true } });
-  return result;
+  if (passed) {
+    await model.update({ pending: false }, { where: { id } });
+  } else {
+    await model.destroy({ where: { id, pending: true } });
+  }
+  return passed;
 };
 
 
@@ -27,5 +31,10 @@ const contentEventReceiver = async (message) => {
   return acceptor(data);
 };
 
+const moderationSaga = async (message) => {
+  const result = await mqRPC(message, moderationEventQueue, contentEventReceiver);
+  return result;
+};
 
-module.exports = contentEventReceiver;
+
+module.exports = moderationSaga;
