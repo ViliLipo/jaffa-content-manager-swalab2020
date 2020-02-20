@@ -24,8 +24,11 @@ contentRouter.post('/', async (request, response) => {
     const newPost = await Post.create({ user: username, title, content });
     const jsonData = newPost.getJsonRepresentation();
     const moderationresult = await moderationSaga(jsonData);
-    console.log('wow', moderationresult);
-    response.status(200).json({ status: 200 });
+    if (moderationresult) {
+      response.status(200).json({ status: 200 });
+    } else {
+      response.status(401).json({ error: 'Post did not pass automatic modaration' });
+    }
   } catch (error) {
     console.error(error);
     response.status(500).json({ status: 500 });
