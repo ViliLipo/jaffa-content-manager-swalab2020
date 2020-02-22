@@ -42,16 +42,22 @@ This decomposing strategy follows the "decompose by business capability"-pattern
 
 - The back-end micro-services are implemented in Node.js/Express.js framework.
 - The front-end will use React.js
-- The application will use a single database server, but will use the private-tables-per-service pattern.
-- Interservice communication will use RabbitMQ. Simple implementation of the Reactor-pattern will
-be used to handle different types of events, in which the machine queue will be the event queue and
-i will create a eventHandlerFactory to create a function that corresponds to a type of an event.
+- Application services will use separate Sqlite3-databases.
+- Inter service communication will use RabbitMQ. The services will differentiate between different types
+of messages by using different queues.
 
 ### The Saga-pattern
 
-The Saga-pattern becomes necessary when each microservice has an own database. 
+The Saga-pattern becomes necessary when each micro service has an own database. 
 It is used to manage transactions in this context.
 In the case of Jaffa, the transaction is posting content. In that operation
 the content manager, needs to get validation from the moderation manager to proceed
 with the transaction. Only the moderation manager knows if a user has permissions
 to post to certain topic threads.
+
+### Special case: Redux-saga
+
+In many ways Redux-stores in React-applications are handled like transient in memory databases.
+For that reason the Saga-pattern is applicable for sending information to clients as well. 
+In this pattern the client subscribes to certain server events. When the event occurs it 
+initiates a transaction to the Redux-store.
