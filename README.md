@@ -45,6 +45,8 @@ This decomposing strategy follows the "decompose by business capability"-pattern
 - Application services will use separate Sqlite3-databases.
 - Inter service communication will use RabbitMQ. The services will differentiate between different types
 of messages by using different queues.
+- Inter service communication will use RabbitMQ. Simple implementation of the Reactor-pattern will
+be used to handle different types of events, in which the machine queue will be the event queue and
 
 ### The Saga-pattern
 
@@ -55,9 +57,11 @@ the content manager, needs to get validation from the moderation manager to proc
 with the transaction. Only the moderation manager knows if a user has permissions
 to post to certain topic threads.
 
-### Special case: Redux-saga
+### Challenges
 
-In many ways Redux-stores in React-applications are handled like transient in memory databases.
-For that reason the Saga-pattern is applicable for sending information to clients as well. 
-In this pattern the client subscribes to certain server events. When the event occurs it 
-initiates a transaction to the Redux-store.
+Challenges I have faced during the project have mostly revolved around making
+the Saga-pattern apparent from the source code alone. At the moment there
+is a clear code-model gap that is born from my compliance to the usual way
+of organizing Express.js back-end. The inter service communication is just "tacked" on 
+without much fines. Also there is a challenges with usability as how to inform a user
+if their transaction fails.

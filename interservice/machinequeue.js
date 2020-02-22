@@ -1,5 +1,11 @@
 const amqp = require('amqplib');
 
+
+const generateUuid = () => Math.random().toString()
++ Math.random().toString()
++ Math.random().toString()
++ Math.random().toString();
+
 const mqSend = async (message, queue) => {
   const connection = await amqp.connect('amqp://localhost');
   const channel = await connection.createChannel();
@@ -12,16 +18,39 @@ const mqSend = async (message, queue) => {
   await connection.close();
 };
 
-const receive = async (queueName) => {
+const registerReceiver = async (queueName, receiver) => {
   const connection = await amqp.connect('amqp://localhost');
   const channel = await connection.createChannel();
   const ok = await channel.assertQueue(queueName, { durable: false });
   if (ok) {
     channel.consume(queueName, (message) => {
       console.log(` Received ${message.content.toString()}`);
+      receiver(message);
     }, { noAck: true });
     console.log('Waiting for messages.');
   }
 };
 
-module.exports = { mqSend, receive };
+const mqRPC = async (message, sendQueue, receiver) => {
+  const connection = await amqp.connect('amqp://localhost');
+  const channel = await connection.createChannel();
+  const correlationId = generateUuid();
+  const receivingQueue = await channel.assertQueue('', { exclusive: true });
+  console.log(receivingQueue);
+  if (receivingQueue) {
+    const returnPromise = new Promise((resolve, reject) => {
+      channel.consume(receivingQueue.q, async (reply) => {
+        if (reply.properties.correlationId === correlationId) {
+          const value = await receiver(reply, returnPromise);
+          resolve(value);
+        }
+      }, { noAck: true });
+      channel.sendToQueue(sendQueue, Buffer.from(message),
+        { correlationId, replyTo: receivingQueue.queue });
+    });
+    return returnPromise;
+  }
+  return false;
+};
+
+module.exports = { mqSend, registerReceiver, mqRPC };
