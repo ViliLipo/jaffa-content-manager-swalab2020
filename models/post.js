@@ -7,7 +7,7 @@ const { Model } = Sequelize;
 class Post extends Model {
   getSimpleRepresentation() {
     const {
-      id, title, content, user,
+      id, title, content, user, comments,
     } = this;
     return {
       type: 'post',
@@ -15,6 +15,7 @@ class Post extends Model {
       title,
       content,
       user,
+      comments,
     };
   }
 

@@ -25,8 +25,12 @@ contentRouter.post('/', async (request, response) => {
     const jsonData = newPost.getJsonRepresentation();
     const moderationresult = await moderationSaga(jsonData);
     if (moderationresult) {
+      const [postAfterModeration] = await Post.findAll({
+        include: [Comment],
+        where: { id: newPost.id },
+      });
       console.log('Saga passed');
-      response.status(200).json({ status: 200 });
+      response.status(200).json(postAfterModeration);
     } else {
       console.log('Saga did not pass');
       response.status(401).json({ error: 'Post did not pass automatic modaration' });
@@ -45,11 +49,14 @@ contentRouter.post('/comment', async (request, response) => {
     const post = await Post.findOne({ where: { id: postId }, include: [Comment] });
     await newComment.setPost(post);
     const jsonData = newComment.getJsonRepresentation();
-    await moderationSaga(jsonData);
-    response.status(200).json({ status: 200 });
+    const moderationResult = await moderationSaga(jsonData);
+    if (moderationResult) {
+      return response.status(200).json(newComment);
+    }
+    return response.status(401).json({ error: 'Content did not pass moderation' });
   } catch (error) {
     console.error(error);
-    response.status(500).json({ status: 500 });
+    return response.status(500).json({ status: 500 });
   }
 });
 
