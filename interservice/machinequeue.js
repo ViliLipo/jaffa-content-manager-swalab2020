@@ -36,7 +36,6 @@ const mqRPC = async (message, sendQueue, receiver) => {
   const channel = await connection.createChannel();
   const correlationId = generateUuid();
   const receivingQueue = await channel.assertQueue('', { exclusive: true });
-  console.log(receivingQueue);
   if (receivingQueue) {
     const returnPromise = new Promise((resolve, reject) => {
       channel.consume(receivingQueue.q, async (reply) => {
@@ -47,6 +46,7 @@ const mqRPC = async (message, sendQueue, receiver) => {
       }, { noAck: true });
       channel.sendToQueue(sendQueue, Buffer.from(message),
         { correlationId, replyTo: receivingQueue.queue });
+      console.log(`Sent ${message} to queue ${sendQueue}.`);
     });
     return returnPromise;
   }

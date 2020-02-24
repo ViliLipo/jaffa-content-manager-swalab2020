@@ -24,6 +24,7 @@ const getSagaAcceptor = (type) => {
 };
 
 const contentEventReceiver = async (message) => {
+  console.log('Received reply from moderation manager');
   const { content } = message;
   const data = JSON.parse(content.toString());
   const { type } = data;
@@ -32,6 +33,7 @@ const contentEventReceiver = async (message) => {
 };
 
 const moderationSaga = async (message) => {
+  console.log('Saga starts.');
   const result = await mqRPC(message, moderationEventQueue, contentEventReceiver);
   return result;
 };
